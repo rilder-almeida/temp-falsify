@@ -1,0 +1,12 @@
+variables:
+  - API_NAME:
+      default: "pokedex_verse"
+      pascal: "PokedexVerse"
+  - API_SERVICE_NAME:
+      default: "pokemon_dashboard"
+      kebab: "pokemon-dashboard" 
+  - API_SERVICE_ROUTE: "fetch_pokemon"
+  - API_SERVICE_METHOD: "POST"
+  - PROJECT_GO_MODULE: "gitlab.com/arquivei/stark/templates/api"
+  - PROJECT_GO_VERSION: "${VERSION}"
+  - VERSION: "1.23"

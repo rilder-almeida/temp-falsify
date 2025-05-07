@@ -1,0 +1,3 @@
+module ${PROJECT_GO_MODULE}
+
+go ${PROJECT_GO_VERSION}

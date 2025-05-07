@@ -1,0 +1,46 @@
+name: ${API_NAME}-acceptance-tests
+
+services:
+  ${API_NAME}:
+    image: registry.gitlab.com/arquivei/dockerimages/go:${PROJECT_GO_VERSION}-alpine
+    working_dir: /go/src/${PROJECT_GO_MODULE}
+    ports:
+      - 8000:8000
+      - 9000:9000
+    volumes:
+      - ./scripts/health-check.sh:/health-check.sh:ro
+      - './:/go/src/${PROJECT_GO_MODULE}'
+    environment:
+      APP_LOG_LEVEL: "DEBUG"
+      APP_LOG_HUMAN: "true"
+      APP_ADMINSERVER_ADDR: "0.0.0.0:9000"
+      APP_SHUTDOWN_TIMEOUT: "1m"
+      HTTP_PORT: '8000'
+    entrypoint:
+      - go
+      - run
+      - -tags=musl
+      - -mod=vendor
+      - ./cmd/${API_NAME}
+
+  ## If any mocks are needed
+  ##mock-server:
+  ##  image: registry.gitlab.com/arquivei/stark/ssm:latest
+  ##  volumes:
+  ##    - ./mock-data:/data:ro
+
+  acceptance-tests:
+    image: ghcr.io/orange-opensource/hurl:latest
+    volumes:
+      - ./test-cases:/tests:ro
+      - ../dist/reports:/reports
+    depends_on:
+      ${API_NAME}:
+        required: true
+        condition: service_healthy
+    entrypoint:
+      - hurl
+      - --glob=/tests/**/*.hurl
+      - --test
+      - --error-format=long
+      - --report-junit=/reports/acceptance-tests.xml

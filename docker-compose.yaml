@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  ${API_NAME}:
+    image: registry.gitlab.com/arquivei/dockerimages/go:${PROJECT_GO_VERSION}-alpine
+    working_dir: /go/src/${PROJECT_GO_MODULE}
+    ports:
+      - 8000:8000
+      - 9000:9000
+    volumes:
+      - './:/go/src/${PROJECT_GO_MODULE}'
+    environment:
+      APP_LOG_LEVEL: "DEBUG"
+      APP_LOG_HUMAN: "true"
+      APP_ADMINSERVER_ADDR: :9000
+      APP_SHUTDOWN_TIMEOUT: "1m"
+      HTTP_PORT: '8000'
+    entrypoint:
+      - go
+      - run
+      - -tags=musl
+      - -mod=vendor
+      - ./cmd/${API_NAME}
